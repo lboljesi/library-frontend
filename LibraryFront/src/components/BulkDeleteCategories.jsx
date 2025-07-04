@@ -41,18 +41,15 @@ function BulkDeleteCategories({ bookCategories, onUpdate }) {
   };
 
   return (
-    <div className="space-y-3">
-      <h3 className="text-sm font-semibold text-gray-700">
-        Select categories to remove:
-      </h3>
+    <div>
+      <h3>Select categories to remove:</h3>
 
-      <ul className="space-y-1">
+      <ul>
         {bookCategories.map((cat) => (
           <li key={cat.bookCategoryRelationId}>
-            <label className="flex items-center gap-2 text-sm text-gray-800">
+            <label>
               <input
                 type="checkbox"
-                className="accent-indigo-600"
                 checked={selectedToDelete.includes(cat.bookCategoryRelationId)}
                 onChange={() =>
                   handleCheckboxToggle(cat.bookCategoryRelationId)
@@ -68,16 +65,11 @@ function BulkDeleteCategories({ bookCategories, onUpdate }) {
       <button
         onClick={handleBulkRemove}
         disabled={selectedToDelete.length === 0 || deletingIds.length > 0}
-        className={`px-4 py-2 rounded-md text-sm font-medium text-white ${
-          selectedToDelete.length === 0 || deletingIds.length > 0
-            ? "bg-gray-400 cursor-not-allowed"
-            : "bg-red-600 hover:bg-red-700"
-        }`}
       >
         {deletingIds.length > 0 ? "Removing..." : "Remove Selected Categories"}
       </button>
 
-      {error && <p className="text-red-500 text-sm">{error}</p>}
+      {error && <p>{error}</p>}
     </div>
   );
 }

@@ -140,12 +140,9 @@ function CategoryList() {
   };
 
   return (
-    <main className="max-w-screen-lg mx-auto p-4 space-y-6">
-      <div className="flex flex-col items-start gap-4">
-        <button
-          onClick={() => setIsAddModalOpen(true)}
-          className="px-4 py-2 mb-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-        >
+    <main>
+      <div>
+        <button onClick={() => setIsAddModalOpen(true)}>
           ➕ Add New Category
         </button>
 
@@ -157,39 +154,28 @@ function CategoryList() {
         <SortSelector value={sortDesc} onChange={setSortDesc} />
         <ResetFilters onReset={resetFilters} />
       </div>
-      <table className="w-full border-collapse bg-white shadow-sm rounded-lg overflow-hidden text-sm">
-        <thead className="bg-gray-100 text-gray-600 uppercase text-base font-semibold">
+
+      <table>
+        <thead>
           <tr>
-            <th className="px-4 py-2 text-center">Category</th>
-            <th className="px-4 py-2 text-center">Actions</th>
+            <th>Category</th>
+            <th>Actions</th>
           </tr>
         </thead>
         <tbody>
           {categories.map((category) => (
             <React.Fragment key={category.id}>
-              <tr
-                className={
-                  isEditModalOpen && editingCategoryId === category.id
-                    ? "bg-blue-50"
-                    : ""
-                }
-              >
-                <td className="border-t px-4 py-3 align-middle text-center">
-                  <span className="inline-block font-medium text-gray-800 text-base bg-gray-50 px-3 py-1 rounded-md shadow-sm">
-                    {category.name}
-                  </span>
+              <tr>
+                <td>
+                  <span>{category.name}</span>
                 </td>
-                <td className="border-t px-4 py-3 align-middle text-center">
+                <td>
                   {editingCategoryId !== category.id && (
-                    <div className="flex justify-center gap-x-4">
-                      <button
-                        className="px-3 py-1 rounded-md border text-sm font-medium bg-white shadow hover:bg-gray-100 transition"
-                        onClick={() => openEditModal(category)}
-                      >
+                    <div>
+                      <button onClick={() => openEditModal(category)}>
                         Edit
                       </button>
                       <button
-                        className="px-3 py-1 rounded-md border text-sm font-medium bg-white shadow hover:bg-gray-100 transition"
                         onClick={() => handleDelete(category.id)}
                         disabled={deletingCategoryId === category.id}
                       >
@@ -198,7 +184,6 @@ function CategoryList() {
                           : "Delete"}
                       </button>
                       <button
-                        className="px-3 py-1 rounded-md border text-sm font-medium bg-white shadow hover:bg-gray-100 transition"
                         onClick={() =>
                           setExpandedCategoryId(
                             expandedCategoryId === category.id
@@ -226,6 +211,7 @@ function CategoryList() {
           ))}
         </tbody>
       </table>
+
       <Pagination
         currentPage={currentPage}
         totalCount={totalCount}
@@ -233,6 +219,7 @@ function CategoryList() {
         onPageChange={setCurrentPage}
         onPageSizeChange={setPageSize}
       />
+
       <EditCategoryModal
         isOpen={isEditModalOpen}
         onClose={() => {
@@ -245,6 +232,7 @@ function CategoryList() {
         loading={editLoading}
         error={editError}
       />
+
       <AddCategoryModal
         isOpen={isAddModalOpen}
         onClose={() => setIsAddModalOpen(false)}

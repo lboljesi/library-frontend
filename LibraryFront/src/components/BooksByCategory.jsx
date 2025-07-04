@@ -21,29 +21,19 @@ function BooksByCategory({ categoryId }) {
       .finally(() => setLoading(false));
   }, [categoryId]);
 
-  if (loading) return <p className="text-sm text-gray-500">Loading books...</p>;
+  if (loading) return <p>Loading books...</p>;
 
-  if (error) return <p className="text-sm text-red-600 font-medium">{error}</p>;
+  if (error) return <p>{error}</p>;
 
-  if (books.length === 0)
-    return (
-      <p className="ml-6 mb-4 text-base text-red-500 italic font-semibold">
-        No books found in this category.
-      </p>
-    );
+  if (books.length === 0) return <p>No books found in this category.</p>;
 
   return (
-    <ul className="ml-4 border-l-4 border-blue-200 pl-4 space-y-3 text-sm text-gray-800">
+    <ul>
       {books.map((book) => (
-        <li
-          key={book.id}
-          className="p-3 rounded-md bg-gray-50 shadow-sm border border-gray-200"
-        >
-          <strong className="block text-gray-900 text-base">
-            {book.title}
-          </strong>
-          <span className="text-gray-600">
-            {book.publishedYear} &middot; ISBN: {book.isbn}
+        <li key={book.id}>
+          <strong>{book.title}</strong>
+          <span>
+            {book.publishedYear} · ISBN: {book.isbn}
           </span>
         </li>
       ))}

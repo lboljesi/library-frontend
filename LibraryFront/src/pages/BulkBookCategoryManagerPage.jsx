@@ -90,11 +90,10 @@ function BulkBookCategoryManagerPage() {
   };
 
   return (
-    <div className="max-w-screen-lg mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold text-gray-800 mb-6 border-b pb-2">
-        Manage Book-Category Relations
-      </h1>
-      <div className="flex flex-col items-start gap-6 mb-6">
+    <div>
+      <h1>Manage Book-Category Relations</h1>
+
+      <div>
         <SearchBar
           value={searchTerm}
           onChange={setSearchTerm}
@@ -113,17 +112,12 @@ function BulkBookCategoryManagerPage() {
       </div>
 
       {loading ? (
-        <p className="text-gray-600">Loading books and categories...</p>
+        <p>Loading books and categories...</p>
       ) : (
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div>
           {books.map((book) => (
-            <div
-              key={book.bookId}
-              className="p-4 border border-gray-200 rounded-lg shadow-sm bg-white hover:shadow-md transition"
-            >
-              <h3 className="text-xl font-semibold text-indigo-700 mb-3 leading-snug tracking-tight">
-                {book.bookTitle}
-              </h3>
+            <div key={book.bookId}>
+              <h3>{book.bookTitle}</h3>
               <BulkAddCategoriesToBook
                 bookId={book.bookId}
                 allCategories={allCategories}
@@ -135,7 +129,7 @@ function BulkBookCategoryManagerPage() {
         </div>
       )}
 
-      <div className="mt-8">
+      <div>
         <Pagination
           currentPage={currentPage}
           totalCount={totalCount}

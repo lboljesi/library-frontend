@@ -17,32 +17,37 @@ const AddLoan = () => {
 
   const navigate = useNavigate();
 
-useEffect(() => {
-  const fetchData = async () => {
-    try {
-      const fetchedBooks = await fetchBooks();
-      const fetchedMembers = await fetchMembers();
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const fetchedBooks = await fetchBooks();
+        const fetchedMembers = await fetchMembers();
 
-      setBooks(
-        fetchedBooks.books ? 
-          fetchedBooks.books.map((book) => ({ value: book.id, label: book.title })) :
-          fetchedBooks.map((book) => ({ value: book.id, label: book.title }))
-      );
+        setBooks(
+          fetchedBooks.books
+            ? fetchedBooks.books.map((book) => ({
+                value: book.id,
+                label: book.title,
+              }))
+            : fetchedBooks.map((book) => ({
+                value: book.id,
+                label: book.title,
+              }))
+        );
 
-      setMembers(
-        fetchedMembers.members.map((member) => ({
-          value: member.id,
-          label: member.name,
-        }))
-      );
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    }
-  };
+        setMembers(
+          fetchedMembers.members.map((member) => ({
+            value: member.id,
+            label: member.name,
+          }))
+        );
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
 
-  fetchData();
-}, []);
-
+    fetchData();
+  }, []);
 
   const handleChange = (e) => {
     setLoan({ ...loan, [e.target.name]: e.target.value });
@@ -61,19 +66,22 @@ useEffect(() => {
     };
     console.log("Loan koji saljem", loan);
     try {
-  await addLoan(loanToSend);
-  navigate("/loans");
-} catch (error) {
-  if (
-    error.response?.data?.message?.includes("aktivnu posudbu") ||
-    error.message?.includes("aktivnu posudbu")
-  ) {
-    setErrorMessage("Korisnik već ima aktivnu posudbu za ovu knjigu.");
-  } else {
-    setErrorMessage("Došlo je do greške prilikom dodavanja posudbe. Korisnik ima već aktivnu posudbu za ovu knjigu");
-    console.error("Greška pri dodavanju posudbe:", error);
-  }
-}};
+      await addLoan(loanToSend);
+      navigate("/loans");
+    } catch (error) {
+      if (
+        error.response?.data?.message?.includes("aktivnu posudbu") ||
+        error.message?.includes("aktivnu posudbu")
+      ) {
+        setErrorMessage("Korisnik već ima aktivnu posudbu za ovu knjigu.");
+      } else {
+        setErrorMessage(
+          "Došlo je do greške prilikom dodavanja posudbe. Korisnik ima već aktivnu posudbu za ovu knjigu"
+        );
+        console.error("Greška pri dodavanju posudbe:", error);
+      }
+    }
+  };
 
   return (
     <div className="max-w-screen-md mx-auto p-4">

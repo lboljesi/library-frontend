@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import ReactDOM from "react-dom";
-import { getLoanById, updateLoan } from "../services/api";  // promjena ovdje
+import { getLoanById, updateLoan } from "../services/api"; // promjena ovdje
 
 const modalRoot = document.getElementById("modal-root");
 
@@ -15,7 +15,7 @@ const EditLoanModal = ({ loanId, onClose, onSave }) => {
   useEffect(() => {
     const fetchLoan = async () => {
       try {
-        const found = await getLoanById(loanId);  // pozovi getLoanById
+        const found = await getLoanById(loanId); // pozovi getLoanById
         if (found) {
           setLoan(found);
           setFormData({
@@ -76,77 +76,51 @@ const EditLoanModal = ({ loanId, onClose, onSave }) => {
   if (!loanId) return null;
 
   const modalContent = (
-    <div
-      onClick={onClose}
-      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
-    >
-      <div
-        onClick={(e) => e.stopPropagation()}
-        className="bg-white rounded-lg shadow-lg w-full max-w-md p-6"
-      >
+    <div onClick={onClose}>
+      <div onClick={(e) => e.stopPropagation()}>
         {!loan ? (
-          <p className="text-center text-gray-600">Loading...</p>
+          <p>Loading...</p>
         ) : (
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <h2 className="text-2xl font-bold text-gray-800 border-b pb-2">
-              Edit Loan
-            </h2>
+          <form onSubmit={handleSubmit}>
+            <h2>Edit Loan</h2>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Loan Date
-              </label>
+              <label>Loan Date</label>
               <input
                 type="date"
                 name="loanDate"
                 value={formData.loanDate}
                 onChange={handleChange}
                 required
-                className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Returned Date
-              </label>
+              <label>Returned Date</label>
               <input
                 type="date"
                 name="returnedDate"
                 value={formData.returnedDate}
                 onChange={handleChange}
-                className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Must Return
-              </label>
+              <label>Must Return</label>
               <input
                 type="date"
                 name="mustReturn"
                 value={formData.mustReturn}
                 onChange={handleChange}
                 required
-                className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
               />
             </div>
 
-            <div className="flex justify-end gap-3 pt-4">
-              <button
-                type="button"
-                onClick={onClose}
-                className="text-gray-600 hover:underline"
-              >
+            <div>
+              <button type="button" onClick={onClose}>
                 Cancel
               </button>
-              <button
-                type="submit"
-                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded shadow"
-              >
-                Save Changes
-              </button>
+              <button type="submit">Save Changes</button>
             </div>
           </form>
         )}
