@@ -19,3 +19,22 @@ h2,
 h3 {
   margin-bottom: 1rem;
 }
+
+.nav-links {
+  display: flex;
+  gap: 16px; /* ili margin-right: 16px na svakom linku */
+  flex-wrap: wrap; /* da se prelamaju ako je širina mala */
+  padding: 10px 0;
+}
+
+.btn-nav {
+  text-decoration: none;
+  padding: 6px 12px;
+  background-color: #f2f2f2;
+  border-radius: 4px;
+  color: #333;
+}
+
+.btn-nav:hover {
+  background-color: #ddd;
+}

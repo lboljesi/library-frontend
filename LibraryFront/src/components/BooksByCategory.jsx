@@ -1,5 +1,8 @@
 import { useEffect, useState } from "react";
-import { getBooksForCategory } from "../services/api";
+import {
+  getBooksForCategory,
+  getBooksWithAuthorsForCategory,
+} from "../services/api";
 
 function BooksByCategory({ categoryId }) {
   const [books, setBooks] = useState([]);
@@ -12,7 +15,7 @@ function BooksByCategory({ categoryId }) {
     setLoading(true);
     setError(null);
 
-    getBooksForCategory(categoryId)
+    getBooksWithAuthorsForCategory(categoryId)
       .then((response) => setBooks(response.data))
       .catch((err) => {
         console.error("Error fetching books", err);
@@ -33,6 +36,14 @@ function BooksByCategory({ categoryId }) {
         <li key={book.id}>
           <strong>{book.title}</strong>
           <span>
+            {" - "}
+            {book.authors.map((author, index) => (
+              <span key={author.id}>
+                {author.firstName} {author.lastName}
+                {index < book.authors.length - 1 && ", "}
+              </span>
+            ))}
+            {" · "}
             {book.publishedYear} · ISBN: {book.isbn}
           </span>
         </li>

@@ -48,6 +48,7 @@ function BulkBookCategoryManagerPage() {
     });
   }, [debouncedSearchTerm, sortDesc, currentPage, pageSize, setSearchParams]);
 
+  // First api
   const fetchData = () => {
     setLoading(true);
     Promise.all([

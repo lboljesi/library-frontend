@@ -14,6 +14,8 @@ import React from "react";
 import BooksByCategory from "./BooksByCategory";
 import EditCategoryModal from "./EditCategoryModal";
 import AddCategoryModal from "./AddCategoryModal";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function CategoryList() {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -27,14 +29,19 @@ function CategoryList() {
   const [totalCount, setTotalCount] = useState(0);
 
   const [searchParams, setSearchParams] = useSearchParams();
-  const [searchText, setSearchText] = useState(
-    searchParams.get("search") || ""
-  );
-  const [sortDesc, setSortDesc] = useState(searchParams.get("desc") === "true");
-  const [currentPage, setCurrentPage] = useState(searchParams.get("page") || 1);
-  const [pageSize, setPageSize] = useState(
-    Number(searchParams.get("pageSize")) || 10
-  );
+  // const [searchText, setSearchText] = useState(
+  //   searchParams.get("search") || ""
+  // );
+  // const [sortDesc, setSortDesc] = useState(searchParams.get("desc") === "true");
+  // const [currentPage, setCurrentPage] = useState(searchParams.get("page") || 1);
+  // const [pageSize, setPageSize] = useState(
+  //   Number(searchParams.get("pageSize")) || 10
+  // );
+
+  const [searchText, setSearchText] = useState("");
+  const [sortDesc, setSortDesc] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
 
   const [debouncedSearch, setDebouncedSearch] = useState(searchText);
   const [expandedCategoryId, setExpandedCategoryId] = useState(null);
@@ -42,8 +49,16 @@ function CategoryList() {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
   useEffect(() => {
-    setCurrentPage(1);
-  }, [searchText]);
+    const initialSearch = searchParams.get("search") || "";
+    const initialDesc = searchParams.get("desc") === "true";
+    const initialPage = parseInt(searchParams.get("page") || "1");
+    const initialPageSize = parseInt(searchParams.get("pageSize") || "10");
+
+    setSearchText(initialSearch);
+    setSortDesc(initialDesc);
+    setCurrentPage(initialPage);
+    setPageSize(initialPageSize);
+  }, []);
 
   useEffect(() => {
     const timeoutId = setTimeout(() => {
@@ -63,11 +78,10 @@ function CategoryList() {
         setCategories(response.data.items);
         setTotalCount(response.data.totalCount);
       })
-      .catch((error) => {
-        console.error("Error fetching categories:", error);
+      .catch((err) => {
+        console.error("Error fetching categories: ", err);
       });
   };
-
   useEffect(() => {
     fetchCategories();
   }, [debouncedSearch, sortDesc, currentPage, pageSize]);
@@ -81,9 +95,9 @@ function CategoryList() {
     });
   }, [searchText, sortDesc, currentPage, pageSize]);
 
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [pageSize, sortDesc, pageSize]);
+  // useEffect(() => {
+  //   setCurrentPage(1);
+  // }, [pageSize, sortDesc]);
 
   function handleDelete(id) {
     if (!window.confirm("Are you sure you want to delete this category?"))
@@ -120,6 +134,7 @@ function CategoryList() {
 
     updateCategory(id, editingCategoryName)
       .then(() => {
+        toast.success("Category name edited successfully!");
         setEditingCategoryId(null);
         setEditingCategoryName("");
         setIsEditModalOpen(false);
@@ -128,6 +143,7 @@ function CategoryList() {
       .catch((error) => {
         console.error("Error updating category", error);
         setEditError("Failed to update category.");
+        toast.error("Failed to update category.");
       })
       .finally(() => setEditLoading(false));
   };
@@ -139,6 +155,30 @@ function CategoryList() {
     setPageSize(10);
   };
 
+  const handleSearchChange = (text) => {
+    setSearchText(text);
+    setCurrentPage(1);
+  };
+
+  const handleSortChange = (desc) => {
+    setSortDesc(desc);
+    setCurrentPage(1);
+  };
+
+  const handlePageSize = (size) => {
+    setPageSize(size);
+    setCurrentPage(1);
+  };
+
+  useEffect(() => {
+    setSearchParams({
+      search: searchText,
+      desc: sortDesc,
+      page: currentPage,
+      pageSize,
+    });
+  }, [searchText, sortDesc, currentPage, pageSize]);
+
   return (
     <main>
       <div>
@@ -148,10 +188,10 @@ function CategoryList() {
 
         <SearchBar
           value={searchText}
-          onChange={setSearchText}
+          onChange={handleSearchChange}
           placeholder="Search categories..."
         />
-        <SortSelector value={sortDesc} onChange={setSortDesc} />
+        <SortSelector value={sortDesc} onChange={handleSortChange} />
         <ResetFilters onReset={resetFilters} />
       </div>
 
@@ -217,7 +257,7 @@ function CategoryList() {
         totalCount={totalCount}
         pageSize={pageSize}
         onPageChange={setCurrentPage}
-        onPageSizeChange={setPageSize}
+        onPageSizeChange={handlePageSize}
       />
 
       <EditCategoryModal

@@ -15,9 +15,11 @@
     "bootstrap": "^5.3.7",
     "framer-motion": "^12.23.0",
     "react": "^19.1.0",
+    "react-confirm-alert": "^3.0.6",
     "react-dom": "^19.1.0",
     "react-router-dom": "^7.6.2",
-    "react-select": "^5.10.1"
+    "react-select": "^5.10.1",
+    "react-toastify": "^11.0.5"
   },
   "devDependencies": {
     "@eslint/js": "^9.29.0",
