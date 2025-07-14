@@ -4,19 +4,42 @@ import CategoriesPage from "./pages/CategoriesPage";
 import BulkBookCategoryManagerPage from "./pages/BulkBookCategoryManagerPage";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import LoginPage from "./pages/LoginPage";
+import RequireAuth from "./routes/RequireAuth";
 
 function App() {
   return (
     <div>
       <ToastContainer />
-      <Routes>
-        <Route path="/" element={<Home />} />
 
-        <Route path="/categories" element={<CategoriesPage />} />
+      <Routes>
+        <Route path="/" element={<LoginPage />} />
+        <Route
+          path="/home"
+          element={
+            <RequireAuth>
+              <Home />
+            </RequireAuth>
+          }
+        />
+
+        <Route
+          path="/categories"
+          element={
+            <RequireAuth>
+              <CategoriesPage />
+            </RequireAuth>
+          }
+        />
         <Route
           path="/bulk-category-manager"
-          element={<BulkBookCategoryManagerPage />}
+          element={
+            <RequireAuth>
+              <BulkBookCategoryManagerPage />
+            </RequireAuth>
+          }
         />
+        <Route path="*" element={<div>Page not found</div>} />
       </Routes>
     </div>
   );

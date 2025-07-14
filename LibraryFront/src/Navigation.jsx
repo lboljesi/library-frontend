@@ -1,6 +1,16 @@
-import { Link } from "react-router-dom";
+import { useContext } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { AuthContext } from "./context/AuthContext";
 
-export default function Navigation() {
+function Navigation() {
+  const { token, logout } = useContext(AuthContext);
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    navigate("/");
+  };
+  if (!token) return null;
   return (
     <nav>
       <div>
@@ -14,7 +24,9 @@ export default function Navigation() {
         <Link to="/bulk-category-manager" className="btn-nav">
           Bulk Category Manager
         </Link>
+        <button onClick={handleLogout}>Logout</button>
       </div>
     </nav>
   );
 }
+export default Navigation;

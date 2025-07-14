@@ -5,12 +5,15 @@ import { BrowserRouter } from "react-router-dom";
 import "../assets/styles/style.css";
 
 import Navigation from "./Navigation.jsx";
+import { AuthProvider } from "./context/AuthContext.jsx";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <BrowserRouter>
-      <Navigation />
-      <App />
+      <AuthProvider>
+        <Navigation />
+        <App />
+      </AuthProvider>
     </BrowserRouter>
   </StrictMode>
 );
