@@ -7,21 +7,6 @@ const api = axios.create({
   },
 });
 
-api.interceptors.request.use((config) => {
-  const token = localStorage.getItem("token");
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  } else {
-    delete config.headers.Authorization;
-  }
-  return config;
-});
-
-export async function loginRequest(email, password) {
-  const response = await api.post("auth/login", { email, password });
-  return response.data.token;
-}
-
 export const getBooksForCategory = (categoryId) =>
   api.get(`/bookcategory/${categoryId}/books`);
 
@@ -54,12 +39,12 @@ export function addCategoryToBook(bookId, categoryId) {
 export function addMultipleCategoriesToBook(bookId, categoryIds) {
   return api.post("/bookcategory/bulk", { bookId, categoryIds });
 }
-
+/*
 export const fetchBooks = async () => {
   const response = await api.get("/books");
   return response.data;
 };
-
+*/
 export function updateCategory(id, name) {
   return api.put(`/category/${id}`, { name });
 }
@@ -74,5 +59,29 @@ export const getCategories = ({ desc, search, page, pageSize }) => {
     },
   });
 };
+
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem("token");
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  } else {
+    delete config.headers.Authorization;
+  }
+  return config;
+});
+
+export async function loginRequest(email, password) {
+  const response = await api.post("/auth/login", { email, password });
+  return response.data.token;
+}
+
+export async function registerRequest(email, password, fullName) {
+  const response = await api.post("/auth/register", {
+    email,
+    password,
+    fullName,
+  });
+  return response.data.token;
+}
 
 export default api;

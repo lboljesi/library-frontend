@@ -6,6 +6,7 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import LoginPage from "./pages/LoginPage";
 import RequireAuth from "./routes/RequireAuth";
+import RegisterPage from "./pages/RegisterPage";
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
 
       <Routes>
         <Route path="/" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage />} />
         <Route
           path="/home"
           element={
