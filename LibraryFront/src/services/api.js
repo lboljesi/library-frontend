@@ -84,4 +84,9 @@ export async function registerRequest(email, password, fullName) {
   return response.data.token;
 }
 
+export async function fetchBooksPaged(params) {
+  const response = await api.get("/book/paged", { params });
+  return response.data;
+}
+
 export default api;

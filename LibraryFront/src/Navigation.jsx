@@ -24,6 +24,9 @@ function Navigation() {
         <Link to="/bulk-category-manager" className="btn-nav">
           Bulk Category Manager
         </Link>
+        <Link to="/books" className="btn-nav">
+          Books
+        </Link>
         <button onClick={handleLogout}>Logout</button>
       </div>
     </nav>

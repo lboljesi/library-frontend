@@ -7,6 +7,7 @@ import "react-toastify/dist/ReactToastify.css";
 import LoginPage from "./pages/LoginPage";
 import RequireAuth from "./routes/RequireAuth";
 import RegisterPage from "./pages/RegisterPage";
+import BooksPage from "./pages/BooksPage";
 
 function App() {
   return (
@@ -14,7 +15,7 @@ function App() {
       <ToastContainer />
 
       <Routes>
-        <Route path="/" element={<LoginPage />} />
+        <Route path="/" element={<BooksPage />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route
           path="/home"
@@ -41,6 +42,7 @@ function App() {
             </RequireAuth>
           }
         />
+        <Route path="/books" element={<BooksPage />} />
         <Route path="*" element={<div>Page not found</div>} />
       </Routes>
     </div>
