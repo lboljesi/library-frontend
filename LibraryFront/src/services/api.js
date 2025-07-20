@@ -88,5 +88,8 @@ export async function fetchBooksPaged(params) {
   const response = await api.get("/book/paged", { params });
   return response.data;
 }
-
+export async function addBook(book) {
+  const response = await api.post("/book", book);
+  return response.data;
+}
 export default api;

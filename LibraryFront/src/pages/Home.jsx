@@ -3,16 +3,14 @@ import bookImage from "../../assets/books.svg";
 
 function Home() {
   return (
-    <div className="max-w-screen-lg mx-auto p-6 flex flex-col items-center text-center space-y-8">
+    <div>
       <motion.div
         initial={{ opacity: 0, y: -30 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
       >
-        <h1 className="text-4xl sm:text-5xl font-bold text-gray-800">
-          Welcome to the Library System
-        </h1>
-        <p className="text-lg text-gray-600 mt-4 max-w-xl mx-auto">
+        <h1>Welcome to the Library System</h1>
+        <p>
           Browse, manage and explore your collection of books and categories –
           simply and beautifully.
         </p>

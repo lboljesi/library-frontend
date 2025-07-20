@@ -14,19 +14,11 @@ function Navigation() {
   return (
     <nav>
       <div>
-        <Link to="/" className="btn-nav">
-          Home
-        </Link>
+        <Link to="/">Home</Link>
 
-        <Link to="/categories" className="btn-nav">
-          Categories
-        </Link>
-        <Link to="/bulk-category-manager" className="btn-nav">
-          Bulk Category Manager
-        </Link>
-        <Link to="/books" className="btn-nav">
-          Books
-        </Link>
+        <Link to="/categories">Categories</Link>
+        <Link to="/bulk-category-manager">Bulk Category Manager</Link>
+        <Link to="/books">Books</Link>
         <button onClick={handleLogout}>Logout</button>
       </div>
     </nav>

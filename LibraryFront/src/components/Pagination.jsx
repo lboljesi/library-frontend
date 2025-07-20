@@ -30,7 +30,7 @@ function Pagination({
       </div>
 
       <div>
-        <label htmlFor="pageSize">Show:</label>
+        <label htmlFor="pageSize">Show: </label>
         <select
           id="pageSize"
           value={pageSize}
@@ -40,7 +40,7 @@ function Pagination({
           <option value={10}>10</option>
           <option value={20}>20</option>
         </select>
-        <span>per page</span>
+        <span> per page</span>
       </div>
     </div>
   );
