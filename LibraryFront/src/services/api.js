@@ -1,4 +1,5 @@
 import axios from "axios";
+import { UNSAFE_withErrorBoundaryProps } from "react-router-dom";
 
 const api = axios.create({
   baseURL: "https://localhost:7184/api",
@@ -92,4 +93,15 @@ export async function addBook(book) {
   const response = await api.post("/book", book);
   return response.data;
 }
+
+export async function getAllCategories() {
+  const response = await api.get("/category/all");
+  return response.data;
+}
+
+export async function getAllAuthors() {
+  const response = await api.get("/author/all");
+  return response.data;
+}
+
 export default api;

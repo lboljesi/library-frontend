@@ -6,6 +6,8 @@ import SortByAndOrderSelector from "../components/SortByAndOrderSelector";
 import Pagination from "../components/Pagination";
 import ResetFilters from "../components/ResetFilters";
 import BooksList from "../components/BooksList";
+import AddBookForm from "../components/AddBookForm";
+import AddBookModal from "../components/AddBookModal";
 
 function BooksPage() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -25,6 +27,8 @@ function BooksPage() {
   const [pageSize, setPageSize] = useState(initialPageSize);
 
   const [debouncedSearch, setDebouncedSearch] = useState(search);
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     setSearchParams({
@@ -67,10 +71,15 @@ function BooksPage() {
     loadBooks();
   }, [debouncedSearch, sortBy, desc, page, pageSize]);
 
+  const handleBookAdded = (newBook) => {
+    setBooks((prev) => [newBook, ...prev]);
+    setTotalCount((prev) => prev + 1);
+  };
+
   return (
     <div>
       <h2>Books</h2>
-
+      <button onClick={() => setIsModalOpen(true)}>Add New Book</button>
       <SearchBar
         value={search}
         onChange={setSearch}
@@ -108,6 +117,11 @@ function BooksPage() {
           setPageSize(newSize);
           setPage(1);
         }}
+      />
+      <AddBookModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onBookAdded={handleBookAdded}
       />
     </div>
   );
