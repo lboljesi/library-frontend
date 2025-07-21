@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import { fetchBooksPaged } from "../services/api";
+import { deleteBooksBulk, fetchBooksPaged } from "../services/api";
 import SearchBar from "../components/SearchBar";
 import SortByAndOrderSelector from "../components/SortByAndOrderSelector";
 import Pagination from "../components/Pagination";
 import ResetFilters from "../components/ResetFilters";
 import BooksList from "../components/BooksList";
-import AddBookForm from "../components/AddBookForm";
+
 import AddBookModal from "../components/AddBookModal";
 
 function BooksPage() {
@@ -29,6 +29,8 @@ function BooksPage() {
   const [debouncedSearch, setDebouncedSearch] = useState(search);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const [selectedBookIds, setSelectedBookIds] = useState([]);
 
   useEffect(() => {
     setSearchParams({
@@ -76,6 +78,20 @@ function BooksPage() {
     setTotalCount((prev) => prev + 1);
   };
 
+  const handleBulkDelete = async () => {
+    try {
+      await deleteBooksBulk(selectedBookIds);
+      setBooks((prev) =>
+        prev.filter((book) => !selectedBookIds.includes(book.id))
+      );
+      setTotalCount((prev) => prev - selectedBookIds.length);
+      setSelectedBookIds([]);
+    } catch (err) {
+      console.error("Bulk delete failed", err);
+      alert("Failed to delete book.");
+    }
+  };
+
   return (
     <div>
       <h2>Books</h2>
@@ -106,8 +122,21 @@ function BooksPage() {
           setPageSize(10);
         }}
       />
+      {selectedBookIds.length > 0 && (
+        <button onClick={handleBulkDelete}>
+          Delete Selected ({selectedBookIds.length})
+        </button>
+      )}
       <p>Total: {totalCount}</p>
-      {loading ? <p>Loading books...</p> : <BooksList books={books} />}
+      {loading ? (
+        <p>Loading books...</p>
+      ) : (
+        <BooksList
+          books={books}
+          selectedBookIds={selectedBookIds}
+          setSelectedBookIds={setSelectedBookIds}
+        />
+      )}
       <Pagination
         currentPage={page}
         totalCount={totalCount}

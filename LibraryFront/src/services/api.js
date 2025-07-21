@@ -104,4 +104,11 @@ export async function getAllAuthors() {
   return response.data;
 }
 
+export async function deleteBook(id) {
+  await api.delete(`/book/${id}`);
+}
+
+export async function deleteBooksBulk(ids) {
+  await api.post("/book/delete/bulk", ids);
+}
 export default api;
