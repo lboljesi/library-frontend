@@ -111,4 +111,18 @@ export async function deleteBook(id) {
 export async function deleteBooksBulk(ids) {
   await api.post("/book/delete/bulk", ids);
 }
+
+export async function updateBook(id, book) {
+  const response = await api.put(`/book/${id}`, book);
+  return response.data;
+}
+
+export async function fetchBookAuthors(bookId) {
+  var res = await api.get(`/book/${bookId}/authors`);
+  return res.data;
+}
+export async function fetchBookCategories(bookId) {
+  var res = await api.get(`/book/${bookId}/categories`);
+  return res.data;
+}
 export default api;

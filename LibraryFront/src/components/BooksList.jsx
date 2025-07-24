@@ -1,4 +1,4 @@
-function BooksList({ books, selectedBookIds, setSelectedBookIds }) {
+function BooksList({ books, selectedBookIds, setSelectedBookIds, onEdit }) {
   if (!books.length) return <p>No books found</p>;
 
   const toggleSelect = (id) => {
@@ -10,7 +10,6 @@ function BooksList({ books, selectedBookIds, setSelectedBookIds }) {
   return (
     <ul>
       {books.map((book) => {
-        console.log(book.id);
         return (
           <li key={book.id}>
             <input
@@ -32,6 +31,8 @@ function BooksList({ books, selectedBookIds, setSelectedBookIds }) {
               ? book.categories.map((c) => c.name).join(", ")
               : "No categories"}
             <br />
+            Price: {book.price} <br />
+            <button onClick={() => onEdit(book)}>Edit</button>
           </li>
         );
       })}

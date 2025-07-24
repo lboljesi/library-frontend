@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useSearchParams } from "react-router-dom";
 import { deleteBooksBulk, fetchBooksPaged } from "../services/api";
 import SearchBar from "../components/SearchBar";
@@ -6,8 +6,9 @@ import SortByAndOrderSelector from "../components/SortByAndOrderSelector";
 import Pagination from "../components/Pagination";
 import ResetFilters from "../components/ResetFilters";
 import BooksList from "../components/BooksList";
-
+import { toast, ToastContainer } from "react-toastify";
 import AddBookModal from "../components/AddBookModal";
+import EditBookModal from "../components/EditBookModal";
 
 function BooksPage() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -16,6 +17,7 @@ function BooksPage() {
   const initialDesc = searchParams.get("desc") === "true";
   const initialPage = parseInt(searchParams.get("page") || "1", 10);
   const initialPageSize = parseInt(searchParams.get("pageSize") || "10", 10);
+  const initialPublishedYear = searchParams.get("publishedYear") || "";
 
   const [books, setBooks] = useState([]);
   const [totalCount, setTotalCount] = useState(0);
@@ -25,12 +27,16 @@ function BooksPage() {
   const [desc, setDesc] = useState(initialDesc);
   const [page, setPage] = useState(initialPage);
   const [pageSize, setPageSize] = useState(initialPageSize);
+  const [publishedYear, setPublishedYear] = useState(initialPublishedYear);
+  const [draftPublishedYear, setDraftPublishedYear] = useState(publishedYear);
 
   const [debouncedSearch, setDebouncedSearch] = useState(search);
-
   const [isModalOpen, setIsModalOpen] = useState(false);
-
   const [selectedBookIds, setSelectedBookIds] = useState([]);
+  const [deleting, setDeleting] = useState(false);
+  const checkboxRef = useRef();
+
+  const [editingBook, setEditingBook] = useState(null);
 
   useEffect(() => {
     setSearchParams({
@@ -39,8 +45,9 @@ function BooksPage() {
       desc: desc.toString(),
       page: page.toString(),
       pageSize: pageSize.toString(),
+      publishedYear,
     });
-  }, [search, sortBy, desc, page, pageSize, setSearchParams]);
+  }, [search, sortBy, desc, page, pageSize, publishedYear, setSearchParams]);
 
   useEffect(() => {
     const timeoutId = setTimeout(() => {
@@ -52,43 +59,90 @@ function BooksPage() {
   }, [search]);
 
   useEffect(() => {
-    const loadBooks = async () => {
-      setLoading(true);
-      try {
-        const data = await fetchBooksPaged({
-          search: debouncedSearch,
-          sortBy,
-          desc,
-          page,
-          pageSize,
-        });
-        setBooks(data.books);
-        setTotalCount(data.totalCount);
-      } catch (err) {
-        console.error("Failed to fetch books:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    loadBooks();
-  }, [debouncedSearch, sortBy, desc, page, pageSize]);
+    if (!checkboxRef.current) return;
+    const allIds = books.map((b) => b.id);
+    const allSelected = allIds.every((id) => selectedBookIds.includes(id));
+    const noneSelected = allIds.every((id) => !selectedBookIds.includes(id));
+    checkboxRef.current.indeterminate = !allSelected && !noneSelected;
+  }, [books, selectedBookIds]);
 
-  const handleBookAdded = (newBook) => {
-    setBooks((prev) => [newBook, ...prev]);
-    setTotalCount((prev) => prev + 1);
+  const handleSelectAll = (e) => {
+    const allIds = books.map((b) => b.id);
+    if (e.target.checked) {
+      const newSelected = Array.from(new Set([...selectedBookIds, ...allIds]));
+      setSelectedBookIds(newSelected);
+    } else {
+      const newSelected = selectedBookIds.filter((id) => !allIds.includes(id));
+      setSelectedBookIds(newSelected);
+    }
+  };
+
+  useEffect(() => {
+    setSelectedBookIds((prevSelected) =>
+      prevSelected.filter((id) => books.some((b) => b.id === id))
+    );
+  }, [books]);
+
+  const loadBooks = async () => {
+    setLoading(true);
+    try {
+      const data = await fetchBooksPaged({
+        search: debouncedSearch,
+        sortBy,
+        desc,
+        page,
+        pageSize,
+        publishedYear,
+      });
+      setBooks(data.books);
+      setTotalCount(data.totalCount);
+    } catch (err) {
+      console.error("Failed to fetch books:", err);
+      toast.error("Failed to load books.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadBooks();
+  }, [debouncedSearch, sortBy, desc, page, pageSize, publishedYear]);
+
+  const handleBookAdded = () => {
+    loadBooks();
+    toast.success("Book added successfully!");
   };
 
   const handleBulkDelete = async () => {
+    const confirmed = window.confirm(
+      `Are you sure you want to delete ${selectedBookIds.length} book(s)?`
+    );
+    if (!confirmed) {
+      return;
+    }
+    setDeleting(true);
     try {
       await deleteBooksBulk(selectedBookIds);
-      setBooks((prev) =>
-        prev.filter((book) => !selectedBookIds.includes(book.id))
-      );
-      setTotalCount((prev) => prev - selectedBookIds.length);
+
+      if (books.length === selectedBookIds.length && page > 1) {
+        setPage((prev) => prev - 1);
+      } else {
+        await loadBooks();
+      }
       setSelectedBookIds([]);
+      toast.success("Books deleted successfully!");
     } catch (err) {
       console.error("Bulk delete failed", err);
-      alert("Failed to delete book.");
+      toast.error("Failed to delete selected books.");
+    } finally {
+      setDeleting(false);
+    }
+  };
+
+  const handlePublishedYearKeyDown = (e) => {
+    if (e.key === "Enter") {
+      setPublishedYear(draftPublishedYear);
+      setPage(1);
     }
   };
 
@@ -101,6 +155,23 @@ function BooksPage() {
         onChange={setSearch}
         placeholder="Search by title or ISBN"
       />
+      <input
+        type="number"
+        value={draftPublishedYear}
+        onChange={(e) => {
+          setDraftPublishedYear(e.target.value);
+        }}
+        placeholder="Filter by published year"
+        onKeyDown={handlePublishedYearKeyDown}
+      />
+      <button
+        onClick={() => {
+          setPublishedYear(draftPublishedYear);
+          setPage(1);
+        }}
+      >
+        Apply
+      </button>
       <SortByAndOrderSelector
         sortBy={sortBy}
         desc={desc}
@@ -120,13 +191,31 @@ function BooksPage() {
           setDesc(false);
           setPage(1);
           setPageSize(10);
+          setPublishedYear("");
+          setDraftPublishedYear("");
         }}
       />
       {selectedBookIds.length > 0 && (
-        <button onClick={handleBulkDelete}>
+        <button
+          type="button"
+          onClick={handleBulkDelete}
+          disabled={loading || deleting}
+        >
           Delete Selected ({selectedBookIds.length})
         </button>
       )}
+      <label>
+        <input
+          type="checkbox"
+          ref={checkboxRef}
+          checked={
+            books.length > 0 &&
+            books.every((b) => selectedBookIds.includes(b.id))
+          }
+          onChange={handleSelectAll}
+        />
+        Select all on page
+      </label>
       <p>Total: {totalCount}</p>
       {loading ? (
         <p>Loading books...</p>
@@ -135,6 +224,7 @@ function BooksPage() {
           books={books}
           selectedBookIds={selectedBookIds}
           setSelectedBookIds={setSelectedBookIds}
+          onEdit={(book) => setEditingBook(book)}
         />
       )}
       <Pagination
@@ -152,6 +242,13 @@ function BooksPage() {
         onClose={() => setIsModalOpen(false)}
         onBookAdded={handleBookAdded}
       />
+      <EditBookModal
+        isOpen={!!editingBook}
+        book={editingBook}
+        onClose={() => setEditingBook(null)}
+        onBookEdited={loadBooks}
+      />
+      <ToastContainer position="top-right" autoClose={3000} />
     </div>
   );
 }
