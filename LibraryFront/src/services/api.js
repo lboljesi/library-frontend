@@ -118,11 +118,20 @@ export async function updateBook(id, book) {
 }
 
 export async function fetchBookAuthors(bookId) {
-  var res = await api.get(`/book/${bookId}/authors`);
+  const res = await api.get(`/book/${bookId}/authors`);
   return res.data;
 }
 export async function fetchBookCategories(bookId) {
-  var res = await api.get(`/book/${bookId}/categories`);
+  const res = await api.get(`/book/${bookId}/categories`);
   return res.data;
 }
+
+export async function deleteBookAuthorLink(bookAuthorId) {
+  await api.delete(`/book/bookauthor/${bookAuthorId}`);
+}
+
+export async function deleteBookCategoryLink(bookCategoryId) {
+  await api.delete(`/book/bookcategory/${bookCategoryId}`);
+}
+
 export default api;

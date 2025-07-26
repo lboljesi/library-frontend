@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import {
+  deleteBookAuthorLink,
+  deleteBookCategoryLink,
   fetchBookAuthors,
   fetchBookCategories,
   updateBook,
@@ -62,6 +64,26 @@ function EditBookModal({ book, isOpen, onClose, onBookEdited }) {
     }
   };
 
+  const handleDeleteAuthor = async (bookAuthorId) => {
+    try {
+      await deleteBookAuthorLink(bookAuthorId);
+      const refreshed = await fetchBookAuthors(book.id);
+      setAuthors(refreshed);
+    } catch (err) {
+      toast.error("Failed to delete author!");
+    }
+  };
+
+  const handleDeleteCategory = async (bookCategoryId) => {
+    try {
+      await deleteBookCategoryLink(bookCategoryId);
+      const refreshed = await fetchBookCategories(book.id);
+      setCategories(refreshed);
+    } catch (err) {
+      toast.error("Failed to delete category!");
+    }
+  };
+
   if (!isOpen || !book) return null;
 
   return (
@@ -90,6 +112,8 @@ function EditBookModal({ book, isOpen, onClose, onBookEdited }) {
           onChange={(e) => updateForm("price", e.target.value)}
           placeholder="Price"
         />
+        <button onClick={handleSave}>Save</button>
+        <button onClick={onClose}>Cancel</button>
         <h4>Authors</h4>
         <ul>
           {authors.length === 0 ? (
@@ -98,6 +122,9 @@ function EditBookModal({ book, isOpen, onClose, onBookEdited }) {
             authors.map((a) => (
               <li key={a.id}>
                 {a.firstName} {a.lastName}
+                <button onClick={() => handleDeleteAuthor(a.bookAuthorId)}>
+                  Delete
+                </button>
               </li>
             ))
           )}
@@ -107,11 +134,16 @@ function EditBookModal({ book, isOpen, onClose, onBookEdited }) {
           {categories.length === 0 ? (
             <li>No categories</li>
           ) : (
-            categories.map((c) => <li key={c.id}>{c.name}</li>)
+            categories.map((c) => (
+              <li key={c.id}>
+                {c.name}
+                <button onClick={() => handleDeleteCategory(c.bookCategoryId)}>
+                  Delete
+                </button>
+              </li>
+            ))
           )}
         </ul>
-        <button onClick={handleSave}>Save</button>
-        <button onClick={onClose}>Cancel</button>
       </div>
     </div>
   );
