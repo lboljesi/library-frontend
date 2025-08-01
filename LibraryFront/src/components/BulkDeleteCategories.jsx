@@ -6,16 +6,6 @@ function BulkDeleteCategories({ bookCategories, onUpdate }) {
   const [deletingIds, setDeletingIds] = useState([]);
   const [error, setError] = useState(null);
 
-  /*
-  const handleCheckboxToggle = (relationId) => {
-    setSelectedToDelete((prev) =>
-      prev.includes(relationId)
-        ? prev.filter((id) => id !== relationId)
-        : [...prev, relationId]
-    );
-  };
-  */
-
   const handleCheckboxToggle = (relationId) => {
     setSelectedToDelete((prev) => {
       if (prev.includes(relationId))
@@ -36,7 +26,7 @@ function BulkDeleteCategories({ bookCategories, onUpdate }) {
     deleteRelationIds(selectedToDelete)
       .then(() => {
         const updated = bookCategories.filter(
-          (cat) => !selectedToDelete.includes(cat.bookCategoryRelationId)
+          (cat) => !selectedToDelete.includes(cat.bookCategoryId)
         );
         onUpdate(updated);
         setSelectedToDelete([]);
@@ -55,17 +45,15 @@ function BulkDeleteCategories({ bookCategories, onUpdate }) {
       <h3>Select categories to remove:</h3>
       <ul>
         {bookCategories.map((cat) => (
-          <li key={cat.bookCategoryRelationId}>
+          <li key={cat.bookCategoryId}>
             <label>
               <input
                 type="checkbox"
-                checked={selectedToDelete.includes(cat.bookCategoryRelationId)}
-                onChange={() =>
-                  handleCheckboxToggle(cat.bookCategoryRelationId)
-                }
-                disabled={deletingIds.includes(cat.bookCategoryRelationId)}
+                checked={selectedToDelete.includes(cat.bookCategoryId)}
+                onChange={() => handleCheckboxToggle(cat.bookCategoryId)}
+                disabled={deletingIds.includes(cat.bookCategoryId)}
               />
-              {cat.categoryName}
+              {cat.name}
             </label>
           </li>
         ))}

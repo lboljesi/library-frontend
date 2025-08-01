@@ -16,25 +16,25 @@ function BulkAddCategoriesToBook({
   const [error, setError] = useState(null);
 
   const avaibleCategories = allCategories.filter(
-    (cat) => !bookCategories.some((bc) => bc.categoryId === cat.id)
+    (cat) => !bookCategories.some((bc) => bc.id === cat.id)
   );
 
-  const handleAdd = () => {
+  const handleAdd = async () => {
     if (selectedIds.length === 0) return;
 
     setLoading(true);
     setError(null);
 
-    addMultipleCategoriesToBook(bookId, selectedIds)
-      .then((res) => {
-        onUpdate([...bookCategories, ...res.data]);
-        setSelectedIds([]);
-      })
-      .catch((err) => {
-        console.error("Error adding categories", err);
-        setError("Failed to add categories.");
-      })
-      .finally(() => setLoading(false));
+    try {
+      const added = await addMultipleCategoriesToBook(bookId, selectedIds);
+      onUpdate([...bookCategories, ...added]);
+      setSelectedIds([]);
+    } catch (err) {
+      console.error("Error adding categories", err);
+      setError("Failed to add categories");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

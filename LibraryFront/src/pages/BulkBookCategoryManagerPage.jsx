@@ -61,10 +61,20 @@ function BulkBookCategoryManagerPage() {
       api.get("/category/all"),
     ])
       .then(([booksRes, categoriesRes]) => {
-        setBooks(booksRes.data.items || []);
+        const books = (booksRes.data.items || []).map((book) => ({
+          ...book,
+          categories: (book.categories || []).map((cat) => ({
+            id: cat.categoryId,
+            name: cat.categoryName,
+            bookCategoryId: cat.bookCategoryRelationId,
+          })),
+        }));
+
+        setBooks(books);
         setTotalCount(booksRes.data.totalCount || 0);
         setAllCategories(categoriesRes.data.items || categoriesRes.data);
       })
+
       .catch((err) => console.error("Error loading data", err))
       .finally(() => setLoading(false));
   };

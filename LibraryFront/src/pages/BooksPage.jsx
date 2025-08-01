@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import { useSearchParams } from "react-router-dom";
-import { deleteBooksBulk, fetchBooksPaged } from "../services/api";
+import { deleteBooksBulk, fetchBooksPaged, updateBook } from "../services/api";
 import SearchBar from "../components/SearchBar";
 import SortByAndOrderSelector from "../components/SortByAndOrderSelector";
 import Pagination from "../components/Pagination";
@@ -246,7 +246,11 @@ function BooksPage() {
         isOpen={!!editingBook}
         book={editingBook}
         onClose={() => setEditingBook(null)}
-        onBookEdited={loadBooks}
+        onBookEdited={(patch) =>
+          setBooks((prevBooks) =>
+            prevBooks.map((b) => (b.id === patch.id ? { ...b, ...patch } : b))
+          )
+        }
       />
       <ToastContainer position="top-right" autoClose={3000} />
     </div>

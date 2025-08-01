@@ -37,9 +37,11 @@ export function addCategoryToBook(bookId, categoryId) {
   return api.post("/bookcategory", { bookId, categoryId });
 }
 
-export function addMultipleCategoriesToBook(bookId, categoryIds) {
-  return api.post("/bookcategory/bulk", { bookId, categoryIds });
+export async function addMultipleCategoriesToBook(bookId, categoryIds) {
+  const res = await api.post("/bookcategory/bulk", { bookId, categoryIds });
+  return res.data;
 }
+
 /*
 export const fetchBooks = async () => {
   const response = await api.get("/books");
@@ -132,6 +134,13 @@ export async function deleteBookAuthorLink(bookAuthorId) {
 
 export async function deleteBookCategoryLink(bookCategoryId) {
   await api.delete(`/book/bookcategory/${bookCategoryId}`);
+}
+export async function addMultipleAuthorsToBook(bookId, authorIds) {
+  const response = await api.post("book/bookauthor/bulk", {
+    bookId,
+    authorIds,
+  });
+  return response.data;
 }
 
 export default api;
