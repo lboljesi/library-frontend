@@ -8,6 +8,7 @@ import LoginPage from "./pages/LoginPage";
 import RequireAuth from "./routes/RequireAuth";
 import RegisterPage from "./pages/RegisterPage";
 import BooksPage from "./pages/BooksPage";
+import MembersPage from "./pages/MembersPage";
 
 function App() {
   return (
@@ -15,7 +16,7 @@ function App() {
       <ToastContainer />
 
       <Routes>
-        <Route path="/" element={<BooksPage />} />
+        <Route path="/" element={<MembersPage />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route
           path="/home"
