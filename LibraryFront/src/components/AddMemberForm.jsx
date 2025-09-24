@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { createMember } from "../services/memberApi";
+import { toast } from "react-toastify";
 
 function AddMemberForm({ onMemberAdded }) {
   const [form, setForm] = useState({
@@ -20,12 +21,18 @@ function AddMemberForm({ onMemberAdded }) {
     if (loading) return;
 
     if (!form.name.trim()) {
-      alert("Name is required.");
+      toast.warn("Name is required.");
       return;
     }
 
-    if (!form.birthYear || Number.isNaN(parseInt(form.birthYear, 10))) {
-      alert("Birth Year must be a number.");
+    const year = parseInt(form.birthYear, 10);
+    if (Number.isNaN(year)) {
+      toast.warn("Birth Year must be a number.");
+      return;
+    }
+
+    if (year < 1900 || year > new Date().getFullYear()) {
+      toast.warn("Birth Year out of range.");
       return;
     }
     setLoading(true);
@@ -33,7 +40,7 @@ function AddMemberForm({ onMemberAdded }) {
       const payload = {
         name: form.name.trim(),
 
-        birthYear: parseInt(form.birthYear, 10),
+        birthYear: year,
         membershipDate: form.membershipDate
           ? new Date(form.membershipDate).toISOString()
           : null,
@@ -44,7 +51,7 @@ function AddMemberForm({ onMemberAdded }) {
 
       setForm({ name: "", birthYear: "", membershipDate: "" });
     } catch (err) {
-      alert("Failed to create member");
+      toast.error("Failed to create member");
     } finally {
       setLoading(false);
     }

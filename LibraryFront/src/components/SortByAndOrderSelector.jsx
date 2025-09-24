@@ -3,6 +3,10 @@ function SortByAndOrderSelector({
   desc,
   onSortByChange,
   onDescChange,
+  options = [
+    { value: "title", label: "Title" },
+    { value: "year", label: "Published year" },
+  ],
 }) {
   return (
     <div>
@@ -12,8 +16,11 @@ function SortByAndOrderSelector({
         value={sortBy}
         onChange={(e) => onSortByChange(e.target.value)}
       >
-        <option value="title">Title</option>
-        <option value="year">Published year</option>
+        {options.map((opt) => (
+          <option key={opt.value} value={opt.value}>
+            {opt.label}
+          </option>
+        ))}
       </select>
       <label htmlFor="order">Order</label>
       <select
