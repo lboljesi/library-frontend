@@ -36,3 +36,8 @@ export async function getMembersPaged(params) {
   const { data } = await api.get("/member/paged", { params });
   return data;
 }
+
+export async function getMemberLoans(memberId) {
+  const { data } = await api.get(`/member/${memberId}/loans`);
+  return data;
+}

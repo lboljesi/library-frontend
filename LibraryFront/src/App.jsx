@@ -16,7 +16,7 @@ function App() {
       <ToastContainer />
 
       <Routes>
-        <Route path="/" element={<MembersPage />} />
+        <Route path="/" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route
           path="/home"
@@ -43,7 +43,22 @@ function App() {
             </RequireAuth>
           }
         />
-        <Route path="/books" element={<BooksPage />} />
+        <Route
+          path="/books"
+          element={
+            <RequireAuth>
+              <BooksPage />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/members"
+          element={
+            <RequireAuth>
+              <MembersPage />
+            </RequireAuth>
+          }
+        />
         <Route path="*" element={<div>Page not found</div>} />
       </Routes>
     </div>

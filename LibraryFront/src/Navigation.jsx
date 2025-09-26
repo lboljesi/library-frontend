@@ -19,6 +19,7 @@ function Navigation() {
         <Link to="/categories">Categories</Link>
         <Link to="/bulk-category-manager">Bulk Category Manager</Link>
         <Link to="/books">Books</Link>
+        <Link to="/members">Members</Link>
         <button onClick={handleLogout}>Logout</button>
       </div>
     </nav>

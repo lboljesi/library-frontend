@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import {
-  getMembers,
   deleteMember,
   getMembersPaged,
+  getMemberLoans,
 } from "../services/memberApi";
 import AddMemberForm from "../components/AddMemberForm";
 import EditMemberModal from "../components/EditMemberModal";
@@ -34,6 +34,28 @@ function MembersPage() {
   const [totalCount, setTotalCount] = useState(0);
 
   const [debouncedSearch, setDebouncedSearch] = useState(search);
+  const [expandedMemberId, setExpandedMemberId] = useState(null);
+  const [loansByMember, setLoansByMember] = useState({});
+  const [loadingLoansId, setLoadingLoansId] = useState(null);
+
+  const toggleLoans = async (memberId) => {
+    if (expandedMemberId === memberId) {
+      setExpandedMemberId(null);
+      return;
+    }
+    setExpandedMemberId(memberId);
+    if (!loansByMember[memberId]) {
+      try {
+        setLoadingLoansId(memberId);
+        const loans = await getMemberLoans(memberId);
+        setLoansByMember((prev) => ({ ...prev, [memberId]: loans }));
+      } catch (err) {
+        toast.error("Failed to load loans");
+      } finally {
+        setLoadingLoansId(null);
+      }
+    }
+  };
 
   useEffect(() => {
     const t = setTimeout(() => setDebouncedSearch(search), 300);
@@ -93,9 +115,13 @@ function MembersPage() {
 
     try {
       await deleteMember(id);
-      setMembers((prev) => prev.filter((m) => m.id !== id));
+      setMembers((prev) => {
+        const next = prev.filter((m) => m.id !== id);
+        if (members.length === 1 && page > 1) setPage(page - 1);
+        return next;
+      });
       setTotalCount((t) => Math.max(0, t - 1));
-      if (members.length === 1 && page > 1) setPage(page - 1);
+
       toast.success("Member deleted");
     } catch (err) {
       toast.error(err.message || "Failed to delete member");
@@ -125,7 +151,7 @@ function MembersPage() {
         options={[
           { value: "name", label: "Name" },
           { value: "birthyear", label: "Birth Year" },
-          { value: "membershipDate", label: "Membership Date" },
+          { value: "membershipdate", label: "Membership Date" },
         ]}
         onSortByChange={(val) => {
           setSortBy(val);
@@ -149,7 +175,7 @@ function MembersPage() {
 
       {loading ? (
         <p>Loading members...</p>
-      ) : members.length == 0 ? (
+      ) : members.length === 0 ? (
         <p>No members yet. Add the first one above.</p>
       ) : (
         <ul>
@@ -194,6 +220,60 @@ function MembersPage() {
                 >
                   Delete
                 </button>
+              )}
+              <button
+                onClick={() => toggleLoans(m.id)}
+                disabled={loading || deletingId === m.id}
+              >
+                {expandedMemberId === m.id ? "Hide loans" : "Show loans"}
+              </button>
+              {expandedMemberId === m.id && (
+                <div>
+                  {loadingLoansId === m.id ? (
+                    <p>Loading loans...</p>
+                  ) : loansByMember[m.id]?.length ? (
+                    <table>
+                      <thead>
+                        <tr>
+                          <th>Book</th>
+                          <th>Loaned</th>
+                          <th>Must return</th>
+                          <th>Returned</th>
+                          <th>Status</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {loansByMember[m.id].map((l) => (
+                          <tr key={l.id}>
+                            <td>
+                              {l.bookTitle} ({l.isbn})
+                            </td>
+                            <td>
+                              {l.loanDate?.slice(0, 10)} ({l.isbn})
+                            </td>
+                            <td>
+                              {l.mustReturn?.slice(0, 10)} ({l.isbn})
+                            </td>
+                            <td>
+                              {l.returnedDate
+                                ? l.returnedDate.slice(0, 10)
+                                : "-"}
+                            </td>
+                            <td>
+                              {l.returnedDate
+                                ? "Returned"
+                                : new Date(l.mustReturn) < new Date()
+                                ? "Overdue"
+                                : "Active"}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  ) : (
+                    <p>No loans.</p>
+                  )}
+                </div>
               )}
             </li>
           ))}
